@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, View, Pressable } from 'react-native'
+import { StyleSheet, Text, TextInput, View, Pressable, Alert } from 'react-native'
 import React, { useRef } from 'react'
 import ScreenWrapper from '../components/ScreenWrapper'
 import Feather from '@expo/vector-icons/Feather';
@@ -10,7 +10,7 @@ import { heightPercentage, widthPercentage } from '../helpers/common';
 import { theme } from '../constants/theme';
 import Input from '../components/Input';
 import Button from '../components/Button';
-
+import { supabase } from '../lib/supabase';
 
 const login = () => {
     const router = useRouter();
@@ -24,7 +24,21 @@ const login = () => {
             return;
         }
 
+        const email = emailRef.current.trim();
+        const password = passwordRef.current.trim();
         
+        setLoading(true);
+
+        const {error} = await supabase.auth.signInWithPassword({
+            email,
+            password,
+        });
+        
+        setLoading(false);
+        console.log('error: ', error);
+        if(error){
+            Alert.alert('Error', error.message);
+        }
     }
 
   return (
